@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Analyzer & Job Matcher</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-title">AI Resume Analyzer</h1>
+                    <span class="brand-subtitle">&amp; Job Matcher</span>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <!-- System Status Indicator (Live check with Spring Boot backend) -->
+                <div class="status-badge" id="backendStatusBadge" role="status" aria-live="polite">
+                    <span class="status-dot pinging" id="statusDot" aria-hidden="true"></span>
+                    <span id="backendStatusText">Checking Backend...</span>
+                </div>
+                <a href="#analyzer" class="nav-btn primary-btn">Launch Analyzer</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <span class="badge-pill">Phase 1: Project Setup &amp; Architecture</span>
+                <h2 class="hero-title">Optimize Your Resume for High-Impact Job Matches</h2>
+                <p class="hero-description">
+                    Upload your resume, paste any target job description, and let intelligent semantic analysis compute your match score, uncover missing technical skills, and provide actionable bullet-point improvements.
+                </p>
+                <div class="features-ribbon">
+                    <div class="feature-item">
+                        <span class="feature-icon">&#x2714;</span>
+                        <span>PDF &amp; DOCX Parsing</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">&#x2714;</span>
+                        <span>Transparent 0-100 Match Score</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">&#x2714;</span>
+                        <span>Skill Gap Detection</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">&#x2714;</span>
+                        <span>Zero Resume Retention Privacy</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analysis Workspace -->
+        <section class="workspace-section" id="analyzer">
+            <div class="workspace-grid">
+                
+                <!-- Left: Resume Upload Card -->
+                <div class="card upload-card">
+                    <div class="card-header">
+                        <div class="card-icon blue">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="card-title">1. Upload Resume</h3>
+                            <p class="card-subtitle">Supported formats: PDF, DOCX (Max 5MB)</p>
+                        </div>
+                    </div>
+
+                    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload resume in PDF or DOCX format, up to 5MB">
+                        <input type="file" id="resumeFileInput" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden aria-label="Resume file upload">
+                        <div class="dropzone-content" id="dropzonePrompt">
+                            <div class="upload-icon-wrapper" aria-hidden="true">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="12" y1="12" x2="12" y2="18"></line>
+                                    <polyline points="9 15 12 12 15 15"></polyline>
+                                </svg>
+                            </div>
+                            <p class="dropzone-text"><strong>Click to upload</strong> or drag and drop your file here</p>
+                            <span class="dropzone-hint">PDF or DOCX documents up to 5MB</span>
+                        </div>
+
+                        <!-- Selected File Preview (hidden until file chosen) -->
+                        <div class="selected-file-info" id="selectedFileInfo" style="display: none;">
+                            <div class="file-details">
+                                <span class="file-icon" aria-hidden="true">&#x1F4C4;</span>
+                                <div>
+                                    <span class="file-name" id="fileNameDisplay">resume.pdf</span>
+                                    <span class="file-size" id="fileSizeDisplay">120 KB</span>
+                                </div>
+                            </div>
+                            <button type="button" class="remove-file-btn" id="removeFileBtn" title="Remove file" aria-label="Remove selected resume file">&times;</button>
+                        </div>
+                    </div>
+
+                    <div id="fileUploadError" class="alert-box error" role="alert" aria-live="assertive" style="display: none;"></div>
+                </div>
+
+                <!-- Right: Job Description Card -->
+                <div class="card job-card">
+                    <div class="card-header">
+                        <div class="card-icon purple">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="card-title">2. Target Job Description</h3>
+                            <p class="card-subtitle">Paste the requirements of the job you want to target</p>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="jobTitleInput">Target Job Title</label>
+                            <input type="text" id="jobTitleInput" placeholder="e.g. Java Full Stack Developer" class="text-input">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="companyNameInput">Company (Optional)</label>
+                            <input type="text" id="companyNameInput" placeholder="e.g. Google, Amazon, Startup" class="text-input">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="textarea-header">
+                            <label for="jobDescriptionInput">Job Requirements &amp; Description</label>
+                            <button type="button" class="btn-sample" id="loadSampleJobBtn" aria-label="Load sample Java Full Stack Developer job requirements">Load Sample Job</button>
+                        </div>
+                        <textarea id="jobDescriptionInput" rows="7" class="textarea-input" placeholder="Paste the full job requirements, qualifications, and responsibilities here..." aria-describedby="charCount minHint"></textarea>
+                        <div class="textarea-footer">
+                            <span class="char-count" id="charCount" aria-live="polite">0 characters</span>
+                            <span class="min-hint" id="minHint">Recommended: 100+ words (15 – 20,000 characters)</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Controls -->
+            <div class="action-bar">
+                <button type="button" class="btn secondary-btn" id="resetBtn">Clear All</button>
+                <button type="button" class="btn primary-btn large-btn" id="analyzeBtn">
+                    <span class="btn-spinner" id="analyzeSpinner" style="display: none;" aria-hidden="true"></span>
+                    <span id="analyzeBtnText">&#x2728; Analyze Resume &amp; Match Job</span>
+                </button>
+            </div>
+            <!-- Loading Status Indicator -->
+            <div id="analysisLoadingAlert" class="alert-box info" role="status" aria-live="polite" style="display: none; margin-top: 1rem;">
+                <span class="btn-spinner" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;" aria-hidden="true"></span>
+                <span><strong>Analyzing in memory:</strong> Extracting document text and evaluating skill alignment... Please wait.</span>
+            </div>
+            <!-- Global Error Banner for Analysis -->
+            <div id="analysisErrorAlert" class="alert-box error" role="alert" aria-live="assertive" style="display: none; margin-top: 1rem;"></div>
+        </section>
+
+        <!-- Live Results Dashboard -->
+        <section class="results-section" id="resultsSection" aria-label="Analysis Results Dashboard">
+            <div class="section-title-wrap">
+                <h3 class="section-heading">Analysis &amp; Match Dashboard</h3>
+                <span class="section-tag" id="resultsStatusTag" role="status" aria-live="polite">Awaiting Resume</span>
+            </div>
+
+            <!-- In-Memory Text Extraction Proof Banner -->
+            <div class="extraction-banner" id="extractionBanner" style="display: none;">
+                <div class="banner-header">
+                    <span class="banner-badge">&#x2714; In-Memory Extracted Successfully</span>
+                    <span class="banner-stats" id="extractedStatsDisplay">0 words</span>
+                </div>
+                <div class="banner-body">
+                    <strong>Analyzed File:</strong> <span id="analyzedFileName">None</span>
+                    <p class="snippet-preview" id="extractedSnippetDisplay"></p>
+                </div>
+            </div>
+
+            <!-- Score Summary Cards -->
+            <div class="metrics-grid">
+                <!-- Radial Match Score Card -->
+                <div class="metric-card score-card">
+                    <h4 class="metric-title">Overall Job-Match Score</h4>
+                    <div class="score-display">
+                        <div class="score-circle" id="scoreCircle">
+                            <span class="score-number" id="matchScoreDisplay">0</span>
+                            <span class="score-percent">%</span>
+                        </div>
+                        <div class="score-label-group">
+                            <span class="score-badge strong" id="scoreRatingBadge">Ready</span>
+                            <p class="score-subtext">Dynamic score calculated from extracted skills, required competencies, and experience.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-metrics Breakdown -->
+                <div class="metric-card">
+                    <h4 class="metric-title">Score Breakdown</h4>
+                    <div class="breakdown-list">
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span>Required Skills Match</span>
+                                <span class="breakdown-val" id="skillsMatchVal">0%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-bar green" id="skillsMatchBar" style="width: 0%;"></div></div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span>Experience Alignment</span>
+                                <span class="breakdown-val" id="expMatchVal">0%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-bar blue" id="expMatchBar" style="width: 0%;"></div></div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span>Education &amp; Qualifications</span>
+                                <span class="breakdown-val" id="eduMatchVal">0%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-bar purple" id="eduMatchBar" style="width: 0%;"></div></div>
+                        </div>
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">
+                                <span>Job Keyword Alignment</span>
+                                <span class="breakdown-val" id="keywordMatchVal">0%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-bar amber" id="keywordMatchBar" style="width: 0%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Comparison Section -->
+            <div class="skills-grid">
+                <div class="card">
+                    <div class="card-header small">
+                        <span class="skill-status-indicator matched"></span>
+                        <h4 class="card-title">Matched Skills (Found in Current Resume)</h4>
+                    </div>
+                    <div class="tag-cloud" id="matchedSkillsCloud">
+                        <span class="empty-cloud-text">Upload a resume and click Analyze to view matched skills.</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header small">
+                        <span class="skill-status-indicator missing"></span>
+                        <h4 class="card-title">Missing Skills (Required by Job)</h4>
+                    </div>
+                    <div class="tag-cloud" id="missingSkillsCloud">
+                        <span class="empty-cloud-text">Missing skills will appear here after analysis.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggestions & Actionable Improvements -->
+            <div class="card suggestions-card">
+                <div class="card-header">
+                    <div class="card-icon gold">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="card-title">Targeted Resume Improvement Suggestions</h4>
+                        <p class="card-subtitle">AI-generated recommendations tailored to your uploaded document</p>
+                    </div>
+                </div>
+                <ul class="suggestions-list" id="suggestionsList">
+                    <li class="suggestion-item">
+                        <span class="suggestion-bullet">&#x2022;</span>
+                        <div>Upload your resume and click Analyze to generate personalized recommendations.</div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Previous Analysis History Section Placeholder -->
+        <section class="history-section">
+            <div class="section-title-wrap">
+                <h3 class="section-heading">Recent Analysis History</h3>
+                <span class="section-tag-muted">Saved in MySQL Database (Phase 2 &amp; 7)</span>
+            </div>
+            <div class="card history-card">
+                <div class="history-empty-state">
+                    <span class="empty-icon">&#x1F4DA;</span>
+                    <p class="empty-title">History Persistence Ready</p>
+                    <p class="empty-desc">Once MySQL is connected in Phase 2 and analysis is wired in Phase 7, all your job match analyses will be automatically cataloged here for quick review.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Privacy & ATS Disclaimer -->
+        <section class="disclaimer-section">
+            <div class="disclaimer-card">
+                <h4>&#x1F6E1;&#xFE0F; Privacy &amp; Scoring Transparency</h4>
+                <p>
+                    <strong>Estimated Match Score:</strong> The 0-100 score is an educational estimate calculated through semantic keyword alignment, required technical skills, and experience matching. It does not represent any single proprietary corporate ATS algorithm.
+                </p>
+                <p>
+                    <strong>Privacy First:</strong> Uploaded resumes are parsed in memory during the analysis session. We never persist raw contact information, phone numbers, or addresses.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2026 AI Resume Analyzer &amp; Job Matcher &bull; Built with Java 17, Spring Boot, MySQL, and Modern JavaScript</p>
+            <div class="footer-links">
+                <a href="#analyzer">Back to Top</a>
+                <span>&bull;</span>
+                <a href="/api/health" target="_blank">Health Check API</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- App Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>
